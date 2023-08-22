@@ -34,6 +34,29 @@ app.listen(PORT, () => {
     console.log(`server started on port ${PORT}`);
 });
 
+app.post(
+    "/timetracker",
+    asyncHandler(async (req, res) => {
+        await TrackedTime.create({
+            userid: req.body.userid,
+            time: req.body.time,
+        });
+    })
+);
+
+app.get(
+    "/timetracker/users/:userid",
+    asyncHandler(async (req, res) => {
+        const trackedTimesList = await TrackedTime.find({
+            userid: req.params.userid,
+        });
+        res.send({
+            userid: req.params.id,
+            time_data_for_user: trackedTimesList,
+        });
+    })
+);
+
 mongoose.set("strictQuery", false);
 const mongoDB = process.env.MONGODB_URL;
 
