@@ -9,9 +9,9 @@ const FlashCardPackSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    flashcard_ids: {
+    pack_state: {
         type: Array,
-        default: [],
+        required: true,
     },
 });
 

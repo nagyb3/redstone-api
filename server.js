@@ -63,26 +63,34 @@ app.get(
     })
 );
 
+//create a flashcard pack
 app.post(
-    "/flashcards/create",
+    "/flashcards/packs/create",
     asyncHandler(async (req, res) => {
-        await FlashCard.create({
-            userid: req.body.userid,
-            first_side: req.body.first_side,
-            second_side: req.body.second_side,
+        const userId = await User.findOne({ username: req.body.username });
+        await FlashCardPack.create({
+            name: req.body.name,
+            userid: userId._id,
+            pack_state: req.body.pack_state,
         });
+        res.sendStatus(200);
     })
 );
 
+//get the flashcardpacks of an user
+//needs test!!
 app.get(
-    "/flashcards/users/:userid",
+    "/flashcards/packs/users/:username",
     asyncHandler(async (req, res) => {
-        const flashCardsList = await TrackedTime.find({
-            userid: req.params.userid,
+        const reqUser = await User.findOne({
+            username: req.params.username,
+        });
+        const flashCardsList = await FlashCardPack.find({
+            userid: reqUser._id,
         });
         res.send({
-            userid: req.params.id,
-            time_data_for_user: trackedTimesList,
+            username: req.params.username,
+            flashcard_packs_for_user: flashCardsList,
         });
     })
 );
