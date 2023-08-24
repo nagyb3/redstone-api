@@ -15,6 +15,8 @@ require("dotenv").config();
 
 const User = require("./models/user");
 const TrackedTime = require("./models/trackedtime");
+const FlashCard = require("./models/flashcard");
+const FlashCardPack = require("./models/flashcardpack");
 
 app.use(
     session({
@@ -37,10 +39,14 @@ app.listen(PORT, () => {
 app.post(
     "/timetracker",
     asyncHandler(async (req, res) => {
+        const token = req.headers.authorization.split(" ")[1];
+        const username = jwt.decode(token).username;
+        const reqUser = await User.findOne({ username: username });
         await TrackedTime.create({
-            userid: req.body.userid,
+            userid: String(reqUser._id),
             time: req.body.time,
         });
+        res.sendStatus(200);
     })
 );
 
@@ -53,6 +59,43 @@ app.get(
         res.send({
             userid: req.params.id,
             time_data_for_user: trackedTimesList,
+        });
+    })
+);
+
+app.post(
+    "/flashcards/create",
+    asyncHandler(async (req, res) => {
+        await FlashCard.create({
+            userid: req.body.userid,
+            first_side: req.body.first_side,
+            second_side: req.body.second_side,
+        });
+    })
+);
+
+app.get(
+    "/flashcards/users/:userid",
+    asyncHandler(async (req, res) => {
+        const flashCardsList = await TrackedTime.find({
+            userid: req.params.userid,
+        });
+        res.send({
+            userid: req.params.id,
+            time_data_for_user: trackedTimesList,
+        });
+    })
+);
+
+app.get(
+    "/timetracker/stats/users/:id",
+    asyncHandler(async (req, res) => {
+        const trackedTimesForUser = await TrackedTime.find({
+            userid: req.params.id,
+        });
+        res.send({
+            user_id: req.params.id,
+            tracked_times_for_user: trackedTimesForUser,
         });
     })
 );
