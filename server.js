@@ -50,18 +50,18 @@ app.post(
     })
 );
 
-app.get(
-    "/timetracker/users/:userid",
-    asyncHandler(async (req, res) => {
-        const trackedTimesList = await TrackedTime.find({
-            userid: req.params.userid,
-        });
-        res.send({
-            userid: req.params.id,
-            time_data_for_user: trackedTimesList,
-        });
-    })
-);
+// app.get(
+//     "/timetracker/users/:userid",
+//     asyncHandler(async (req, res) => {
+//         const trackedTimesList = await TrackedTime.find({
+//             userid: req.params.userid,
+//         });
+//         res.send({
+//             userid: req.params.id,
+//             time_data_for_user: trackedTimesList,
+//         });
+//     })
+// );
 
 //create a flashcard pack
 app.post(
@@ -96,13 +96,24 @@ app.get(
 );
 
 app.get(
-    "/timetracker/stats/users/:id",
+    "/flashcards/packs/:packid",
     asyncHandler(async (req, res) => {
+        const thePack = await FlashCardPack.findById(req.params.packid);
+        res.send({
+            pack: thePack,
+        });
+    })
+);
+
+app.get(
+    "/timetracker/stats/users/:username",
+    asyncHandler(async (req, res) => {
+        const userId = await User.findOne({ username: req.params.username });
         const trackedTimesForUser = await TrackedTime.find({
-            userid: req.params.id,
+            userid: userId._id,
         });
         res.send({
-            user_id: req.params.id,
+            username: req.params.username,
             tracked_times_for_user: trackedTimesForUser,
         });
     })
