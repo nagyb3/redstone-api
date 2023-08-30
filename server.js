@@ -105,6 +105,20 @@ app.get(
     })
 );
 
+app.put(
+    "flashcards/packs/:packid",
+    asyncHandler(async (req, res) => {
+        await FlashCardPack.findOneAndUpdate(
+            { _id: req.params.packid },
+            {
+                name: req.body.name,
+                pack_state: req.body.pack_state,
+            }
+        );
+        res.sendStatus(200);
+    })
+);
+
 app.get(
     "/timetracker/stats/users/:username",
     asyncHandler(async (req, res) => {
