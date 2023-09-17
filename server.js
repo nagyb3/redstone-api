@@ -17,6 +17,7 @@ const User = require("./models/user");
 const TrackedTime = require("./models/trackedtime");
 const FlashCard = require("./models/flashcard");
 const FlashCardPack = require("./models/flashcardpack");
+const Todo = require("./models/todo");
 
 app.use(
     session({
@@ -130,6 +131,54 @@ app.get(
             username: req.params.username,
             tracked_times_for_user: trackedTimesForUser,
         });
+    })
+);
+
+//get todo items for user
+app.post(
+    "/todo/user",
+    asyncHandler(async (req, res) => {
+        const theTodo = await Todo.findOne({ user_id: req.body.user_id });
+        if (theTodo === null) {
+            res.send({
+                todo_items: [],
+            });
+        } else {
+            res.send({
+                todo_items: theTodo,
+            });
+        }
+    })
+);
+
+//add todo item
+app.post(
+    "/todo/",
+    asyncHandler(async (req, res) => {
+        await Todo.create({
+            userid: req.body.userid,
+            text: req.body.text,
+        });
+        res.sendStatus(200);
+    })
+);
+
+//change status on todo item
+app.put(
+    "/todo/",
+    asyncHandler(async (req, res) => {
+        const thisTodo = await Todo.findOne({ _id: req.body.todo_item_id });
+        thisTodo.updateOne({ is_done: req.body.new_status });
+        res.sendStatus(200);
+    })
+);
+
+//remove todo item
+app.delete(
+    "/todo/",
+    asyncHandler(async (req, res) => {
+        await Todo.deleteOne({ _id: req.body.todo_item_id });
+        res.sendStatus(200);
     })
 );
 
