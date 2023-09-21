@@ -138,7 +138,7 @@ app.get(
 app.post(
     "/todo/user",
     asyncHandler(async (req, res) => {
-        const theTodo = await Todo.findOne({ user_id: req.body.user_id });
+        const theTodo = await Todo.find({ username: req.body.username });
         if (theTodo === null) {
             res.send({
                 todo_items: [],
@@ -156,7 +156,7 @@ app.post(
     "/todo/",
     asyncHandler(async (req, res) => {
         await Todo.create({
-            userid: req.body.userid,
+            username: req.body.username,
             text: req.body.text,
         });
         res.sendStatus(200);
@@ -167,8 +167,10 @@ app.post(
 app.put(
     "/todo/",
     asyncHandler(async (req, res) => {
-        const thisTodo = await Todo.findOne({ _id: req.body.todo_item_id });
-        thisTodo.updateOne({ is_done: req.body.new_status });
+        await Todo.updateOne(
+            { _id: req.body.todo_item_id },
+            { is_done: req.body.new_status }
+        );
         res.sendStatus(200);
     })
 );
