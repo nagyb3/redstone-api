@@ -37,6 +37,10 @@ app.listen(PORT, () => {
     console.log(`server started on port ${PORT}`);
 });
 
+app.listen("/", (req, res) => {
+    res.send("Hello World!");
+});
+
 app.post(
     "/timetracker",
     asyncHandler(async (req, res) => {
